@@ -13,7 +13,7 @@ local request_places = {}
 local Auto_Farm_Level_Toggle = nil
 getgenv().Team = "Pirates" -- Pirates/Marines
 getgenv().Weapon_Type = "Melee"
-getgenv().Weapon = nil
+getgenv().Weapon = "Superhuman"
 getgenv().Bring_Mob = true
 getgenv().Auto_Farm_Level = true
 
@@ -451,7 +451,6 @@ local function AutoFarmLevel()
             Image = "rbxassetid://4483345998",
             Time = 5
         })
-        Auto_Farm_Level_Toggle:Set(false)
         getgenv().Auto_Farm_Level = false
     end
 end
@@ -494,6 +493,4 @@ elseif game.PlaceId == 7449423635 then
     }
 end
 
-UpdateWeapon()
-wait(3)
 AutoFarmLevel()
