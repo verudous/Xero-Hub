@@ -1,5 +1,3 @@
-local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
-
 -- Variables
 local W = false
 local W2 = false
@@ -346,23 +344,39 @@ local function BringMob(PosMon, NameMon)
     end
 end
 local function AutoFarmLevel()
-    if getgenv().Auto_Farm_Level and getgenv().Weapon ~= nil then
-        repeat wait()
-            -- pcall(function()
-                if not getgenv().Auto_Farm_Level then
-                    return
+    repeat wait()
+        -- pcall(function()
+            if not getgenv().Auto_Farm_Level then
+                return
+            end
+            local NameQuest, QuestNumber, CFrameQuest, NameMob, CFrameMon = CheckQuest()
+            if CFrameMon ~= nil then
+                if (CFrameMon.Position - game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart").Position) > 1000 then
+                    tween(CFrameMon)
+                    if not getgenv().Auto_Farm_Level then
+                        repeat wait()
+                            Stop_Tween = true
+                        until Tween.PlaybackState ~= Enum.PlaybackState.Playing
+                        Stop_Tween = false
+                        return
+                    end
+                    AddVelocity()
                 end
-                local NameQuest, QuestNumber, CFrameQuest, NameMob, CFrameMon = CheckQuest()
-                if CFrameMon ~= nil then
-                    if (CFrameMon.Position - game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart").Position) > 1000 then
-                        tween(CFrameMon)
-                        if not getgenv().Auto_Farm_Level then
-                            repeat wait()
-                                Stop_Tween = true
-                            until Tween.PlaybackState ~= Enum.PlaybackState.Playing
-                            Stop_Tween = false
-                            return
-                        end
+                if game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Visible == false or not game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text:find(NameMob, 1, true) then
+                    tween(CFrameQuest)
+                    if not getgenv().Auto_Farm_Level then
+                        repeat wait()
+                            Stop_Tween = true
+                        until Tween.PlaybackState ~= Enum.PlaybackState.Playing
+                        Stop_Tween = false
+                        return
+                    end
+                    AddVelocity()
+                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("StartQuest", NameQuest, QuestNumber)
+                end
+                for _, v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
+                    if game:GetService("Players").LocalPlayer.Character:FindFirstChild("Humanoid").Health <= 0 then
+                        repeat wait(1) until game:GetService("Players").LocalPlayer.Character:FindFirstChild("Humanoid").Health > 0
                         AddVelocity()
                     end
                     if game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Visible == false or not game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text:find(NameMob, 1, true) then
@@ -376,83 +390,57 @@ local function AutoFarmLevel()
                         end
                         AddVelocity()
                         game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("StartQuest", NameQuest, QuestNumber)
+                        tween(CFrameMon)
+                        if not getgenv().Auto_Farm_Level then
+                            repeat wait()
+                                Stop_Tween = true
+                            until Tween.PlaybackState ~= Enum.PlaybackState.Playing
+                            Stop_Tween = false
+                            return
+                        end
+                        AddVelocity()
                     end
-                    for _, v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
+                    if v.Name == NameMob and v:FindFirstChild("Humanoid") and v:FindFirstChild("Humanoid").Health > 0 and game:GetService("Players").LocalPlayer.Character:FindFirstChild("Humanoid").Health > 0 then
                         if game:GetService("Players").LocalPlayer.Character:FindFirstChild("Humanoid").Health <= 0 then
                             repeat wait(1) until game:GetService("Players").LocalPlayer.Character:FindFirstChild("Humanoid").Health > 0
                             AddVelocity()
                         end
-                        if game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Visible == false or not game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text:find(NameMob, 1, true) then
-                            tween(CFrameQuest)
-                            if not getgenv().Auto_Farm_Level then
-                                repeat wait()
-                                    Stop_Tween = true
-                                until Tween.PlaybackState ~= Enum.PlaybackState.Playing
-                                Stop_Tween = false
-                                return
-                            end
-                            AddVelocity()
-                            game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("StartQuest", NameQuest, QuestNumber)
-                            tween(CFrameMon)
-                            if not getgenv().Auto_Farm_Level then
-                                repeat wait()
-                                    Stop_Tween = true
-                                until Tween.PlaybackState ~= Enum.PlaybackState.Playing
-                                Stop_Tween = false
-                                return
-                            end
-                            AddVelocity()
+                        if getgenv().Bring_Mob then
+                            local PosMon = v:FindFirstChild("HumanoidRootPart").CFrame
+                            BringMob(PosMon, NameMob)
                         end
-                        if v.Name == NameMob and v:FindFirstChild("Humanoid") and v:FindFirstChild("Humanoid").Health > 0 and game:GetService("Players").LocalPlayer.Character:FindFirstChild("Humanoid").Health > 0 then
-                            if game:GetService("Players").LocalPlayer.Character:FindFirstChild("Humanoid").Health <= 0 then
-                                repeat wait(1) until game:GetService("Players").LocalPlayer.Character:FindFirstChild("Humanoid").Health > 0
-                                AddVelocity()
+                        if not getgenv().Auto_Farm_Level then
+                            RemoveVelocity()
+                            return
+                        end
+                        repeat wait(0.1)
+                            UpdateWeapon()
+                            AutoBuso()
+                            tween(v:FindFirstChild("HumanoidRootPart").CFrame*CFrame.new(0, 30, 0))
+                            if not getgenv().Auto_Farm_Level then
+                                repeat wait()
+                                    Stop_Tween = true
+                                until Tween.PlaybackState ~= Enum.PlaybackState.Playing
+                                Stop_Tween = false
+                                return
                             end
-                            if getgenv().Bring_Mob then
-                                local PosMon = v:FindFirstChild("HumanoidRootPart").CFrame
-                                BringMob(PosMon, NameMob)
-                            end
+                            AddVelocity()
                             if not getgenv().Auto_Farm_Level then
                                 RemoveVelocity()
                                 return
                             end
-                            repeat wait(0.1)
-                                UpdateWeapon()
-                                AutoBuso()
-                                tween(v:FindFirstChild("HumanoidRootPart").CFrame*CFrame.new(0, 30, 0))
-                                if not getgenv().Auto_Farm_Level then
-                                    repeat wait()
-                                        Stop_Tween = true
-                                    until Tween.PlaybackState ~= Enum.PlaybackState.Playing
-                                    Stop_Tween = false
-                                    return
-                                end
+                            if game:GetService("Players").LocalPlayer.Character:FindFirstChild("Humanoid").Health <= 0 then
+                                repeat wait(1) until game:GetService("Players").LocalPlayer.Character:FindFirstChild("Humanoid").Health > 0
                                 AddVelocity()
-                                if not getgenv().Auto_Farm_Level then
-                                    RemoveVelocity()
-                                    return
-                                end
-                                if game:GetService("Players").LocalPlayer.Character:FindFirstChild("Humanoid").Health <= 0 then
-                                    repeat wait(1) until game:GetService("Players").LocalPlayer.Character:FindFirstChild("Humanoid").Health > 0
-                                    AddVelocity()
-                                end
-                                EquipWeapon(getgenv().Weapon)
-                                AttackNoCD()
-                            until v:FindFirstChild("Humanoid").Health <= 0
-                        end
+                            end
+                            EquipWeapon(getgenv().Weapon)
+                            AttackNoCD()
+                        until v:FindFirstChild("Humanoid").Health <= 0
                     end
                 end
-            -- end)
-        until not getgenv().Auto_Farm_Level
-    elseif getgenv().Auto_Farm_Level and getgenv().Weapon == nil then
-        OrionLib:MakeNotification({
-            Name = "Error",
-            Content = "Weapon not selected!",
-            Image = "rbxassetid://4483345998",
-            Time = 5
-        })
-        getgenv().Auto_Farm_Level = false
-    end
+            end
+        -- end)
+    until not getgenv().Auto_Farm_Level
 end
 
 -- Script
