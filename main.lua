@@ -495,4 +495,5 @@ elseif game.PlaceId == 7449423635 then
 end
 
 UpdateWeapon()
+wait(3)
 AutoFarmLevel()
